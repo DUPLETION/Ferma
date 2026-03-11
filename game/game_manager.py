@@ -54,7 +54,7 @@ class GameManager:
         return False
 
     def water(self):
-        tile = self.game_map.get_tile(self.drone.y, self.drone.y)
+        tile = self.game_map.get_tile(self.drone.x, self.drone.y)
         if self.resources.get("water", 0) > 0 and tile and tile.type == TileType.SOIL:
             self.resources["water"] -= 1
             if tile.plant:
