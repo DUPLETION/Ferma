@@ -8,36 +8,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Build with Buildozer Docker
+        run: |
+          docker run --rm \
+            -v "$(pwd)":/home/user/project \
+            -w /home/user/project \
+            kivy/buildozer:stable \
+            bash -c "pip install --upgrade pip && buildozer android debug"
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk git zipalign libffi-dev autoconf libtool
-
-    - name: Install Python packages
-      run: |
-        pip install --upgrade pip wheel setuptools
-        pip install cython==0.29.36
-        pip install kivy==2.1.0
-        pip install buildozer==1.4.0
-
-    - name: Build with Buildozer
-      run: |
-        buildozer android debug
-      env:
-        BUILD_NAME: farmbot
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: farmbot-debug.apk
-        path: bin/*.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: farmbot-debug.apk
+          path: bin/*.apk
