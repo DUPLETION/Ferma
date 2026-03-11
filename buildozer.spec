@@ -24,3 +24,5 @@ android.accept_sdk_license = True
 
 android.ndk_api = 21
 android.allow_backup = True
+
+log_level = 2

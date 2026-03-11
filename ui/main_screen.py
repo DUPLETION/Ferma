@@ -4,7 +4,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
-from kivy.graphics import Color, Rectangle
+from kivy.graphics import Color, Rectangle, Ellipse
 
 from ui.console import Console
 from ui.code_editor import CodeEditor
@@ -70,16 +70,11 @@ class GameMapWidget(GridLayout):
         x = self.game_manager.drone.x
         y = self.game_manager.drone.y
         tile = self.tile_widgets[y][x]
-        self.drone_widget = Widget(size_hint=(1, 1))
+        self.drone_widget = Widget(size_hint=(None, None), size=(40, 40))
         with self.drone_widget.canvas:
             Color(1, 0, 0, 1)
-            from kivy.graphics import Rectangle, Ellipse
-            center_x = tile.x + tile.width / 2
-            center_y = tile.y + tile.height / 2
-            size = min(tile.width, tile.height) * 0.6
-            Ellipse(pos=(center_x - size / 2, center_y - size / 2), size=(size, size))
-        self.drone_widget.pos = tile.pos
-        self.drone_widget.size = tile.size
+            Ellipse(pos=(0, 0), size=(40, 40))
+        self.drone_widget.pos = (tile.x + tile.width/2 - 20, tile.y + tile.height/2 - 20)
         self.add_widget(self.drone_widget)
 
     def update(self):
