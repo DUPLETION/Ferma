@@ -18,24 +18,23 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install system dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk git zipalign autoconf automake libtool pkg-config
+        sudo apt-get install -y openjdk-17-jdk git zipalign autoconf libtool
 
-    - name: Install Python dependencies
+    - name: Install Python packages
       run: |
-        pip install --upgrade pip setuptools wheel
-        pip install buildozer cython
-        pip install --upgrade pythonforandroid
+        pip install --upgrade pip wheel setuptools
+        pip install cython==0.29.36
+        pip install kivy==2.1.0
+        pip install buildozer
 
-    - name: Build APK
+    - name: Build with Buildozer
+      run: |
+        buildozer android debug --verbose
       env:
         BUILD_NAME: farmbot
-        ANDROID_SDK_ROOT: /opt/android-sdk
-        ANDROID_NDK_ROOT: /opt/android-ndk
-      run: |
-        buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
