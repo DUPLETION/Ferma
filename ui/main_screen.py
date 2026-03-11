@@ -5,6 +5,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Rectangle, Ellipse
+from kivy.clock import Clock
 
 from ui.console import Console
 from ui.code_editor import CodeEditor
@@ -62,20 +63,28 @@ class GameMapWidget(GridLayout):
                 self.add_widget(tile_widget)
                 row.append(tile_widget)
             self.tile_widgets.append(row)
-        self._update_drone()
 
-    def _update_drone(self):
-        if self.drone_widget:
-            self.remove_widget(self.drone_widget)
+    def create_drone_overlay(self, parent):
         x = self.game_manager.drone.x
         y = self.game_manager.drone.y
-        tile = self.tile_widgets[y][x]
-        self.drone_widget = Widget(size_hint=(None, None), size=(40, 40))
+        tile_size = parent.width / self.game_manager.game_map.width
+        self.drone_widget = Widget(size_hint=(None, None), size=(tile_size * 0.6, tile_size * 0.6))
         with self.drone_widget.canvas:
             Color(1, 0, 0, 1)
-            Ellipse(pos=(0, 0), size=(40, 40))
-        self.drone_widget.pos = (tile.x + tile.width/2 - 20, tile.y + tile.height/2 - 20)
-        self.add_widget(self.drone_widget)
+            Ellipse(pos=(0, 0), size=(tile_size * 0.6, tile_size * 0.6))
+        parent.add_widget(self.drone_widget)
+        self._update_drone_pos()
+
+    def _update_drone_pos(self):
+        if self.drone_widget and self.parent:
+            tile_size = self.parent.width / self.game_manager.game_map.width
+            x = self.game_manager.drone.x
+            y = self.game_manager.game_map.height - 1 - self.game_manager.drone.y
+            self.drone_widget.pos = (
+                x * tile_size + tile_size * 0.2,
+                y * tile_size + tile_size * 0.2
+            )
+            self.drone_widget.size = (tile_size * 0.6, tile_size * 0.6)
 
     def update(self):
         game_map = self.game_manager.game_map
@@ -85,7 +94,8 @@ class GameMapWidget(GridLayout):
                 self.tile_widgets[y][x].tile_type = tile.type.value
                 self.tile_widgets[y][x].plant = tile.plant
                 self.tile_widgets[y][x]._update_color()
-        self._update_drone()
+        if self.drone_widget:
+            self._update_drone_pos()
 
 
 class MainScreen(BoxLayout):
@@ -148,6 +158,10 @@ class MainScreen(BoxLayout):
     def _setup_game(self):
         self.game_map_widget = GameMapWidget(self.game_manager)
         self.map_container.add_widget(self.game_map_widget)
+        Clock.schedule_once(self._create_drone_overlay)
+
+    def _create_drone_overlay(self, *args):
+        self.game_map_widget.create_drone_overlay(self.map_container)
 
     def on_game_update(self):
         self.update_resources()
