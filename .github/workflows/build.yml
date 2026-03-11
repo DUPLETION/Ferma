@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build FarmBot APK
 
 on:
   push:
@@ -12,12 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo service docker start
-
       - name: Build Android APK
         run: |
           docker run --rm \
@@ -29,5 +23,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: farmbot-debug.apk
+          name: farmbot.apk
           path: ${{ github.workspace }}/bin/*.apk
