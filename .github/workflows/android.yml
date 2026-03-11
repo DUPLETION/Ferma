@@ -18,21 +18,21 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk git zipalign autoconf libtool
+        sudo apt-get install -y openjdk-17-jdk git zipalign libffi-dev autoconf libtool
 
     - name: Install Python packages
       run: |
         pip install --upgrade pip wheel setuptools
         pip install cython==0.29.36
         pip install kivy==2.1.0
-        pip install buildozer
+        pip install buildozer==1.4.0
 
     - name: Build with Buildozer
       run: |
-        buildozer android debug --verbose
+        buildozer android debug
       env:
         BUILD_NAME: farmbot
 
