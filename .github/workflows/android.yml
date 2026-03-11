@@ -12,25 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Build Android APK
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          tags: farmbot:latest
-
-      - name: Extract APK
         run: |
-          docker run --rm -v ${{ github.workspace }}:/output farmbot:latest cp bin/*.apk /output/
-        if: success()
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            kivy/buildozer:stable \
+            buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
-        if: success()
         with:
           name: farmbot-debug.apk
-          path: ${{ github.workspace }}/*.apk
+          path: ${{ github.workspace }}/bin/*.apk
